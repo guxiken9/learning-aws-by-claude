@@ -62,7 +62,7 @@ Amazon Connect → Contact Lens → S3 → Lambda → Bedrock → S3 → Connect
 ## 重要な注意事項
 
 - `/connect-bedrock-summary/`ディレクトリに完全なCDK実装が含まれています
-- `docs/`フォルダに詳細な設計資料（system-design.md、implementation-guide.md、api-specifications.md）があります
+- `/connect-bedrock-summary/docs/`フォルダに詳細な設計資料（system-design.md、implementation-guide.md、api-specifications.md）があります
 - デプロイ前に環境変数（CONNECT_INSTANCE_ID等）の設定が必要です
 - セキュリティとコスト最適化のベストプラクティスが実装済みです
 - 本番利用前にはテスト環境での動作確認を推奨します

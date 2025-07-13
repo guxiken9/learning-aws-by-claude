@@ -16,6 +16,14 @@ Amazon Connect → Contact Lens → S3 → Lambda → Bedrock → S3 → Connect
 - CloudWatchアラームによるエラー監視
 - S3ライフサイクルポリシーによるデータ管理
 
+## 設計ドキュメント
+
+詳細な設計資料は以下を参照してください：
+
+- [システム設計書](docs/system-design.md) - アーキテクチャとコンポーネント設計
+- [実装ガイド](docs/implementation-guide.md) - 開発環境とベストプラクティス  
+- [API仕様書](docs/api-specifications.md) - データスキーマとAPI仕様
+
 ## 前提条件
 
 - Node.js 18.x以上
