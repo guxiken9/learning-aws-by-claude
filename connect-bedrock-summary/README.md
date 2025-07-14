@@ -212,10 +212,3 @@ aws s3 rb s3://connect-transcriptions-<account>-<region> --force
 aws s3 rb s3://connect-summaries-<account>-<region> --force
 ```
 
-## ライセンス
-
-MIT License
-
-## サポート
-
-問題や質問がある場合は、GitHubのIssuesページで報告してください。
