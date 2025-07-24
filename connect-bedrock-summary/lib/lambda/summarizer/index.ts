@@ -83,7 +83,7 @@ const SUMMARY_PROMPT_TEMPLATE = `
 
 export const handler = async (event: S3Event, context: Context): Promise<void> => {
   console.log('Event:', JSON.stringify(event, null, 2));
-  
+
   const startTime = Date.now();
 
   for (const record of event.Records) {
@@ -119,8 +119,11 @@ export const handler = async (event: S3Event, context: Context): Promise<void> =
       console.log(`Calling Bedrock API for contact: ${transcriptionData.contactId}`);
 
       // Bedrockで要約を生成
+      const modelId = process.env.BEDROCK_MODEL_ID || 'anthropic.claude-3-sonnet-20240229-v1:0';
+      console.log(`Using Bedrock model: ${modelId}`);
+      
       const invokeCommand = new InvokeModelCommand({
-        modelId: process.env.BEDROCK_MODEL_ID,
+        modelId: modelId,
         body: JSON.stringify({
           anthropic_version: "bedrock-2023-05-31",
           max_tokens: 1000,
@@ -133,6 +136,7 @@ export const handler = async (event: S3Event, context: Context): Promise<void> =
           temperature: 0.3,
         }),
         contentType: 'application/json',
+        accept: 'application/json'
       });
 
       const bedrockResponse = await bedrockClient.send(invokeCommand);
@@ -141,7 +145,7 @@ export const handler = async (event: S3Event, context: Context): Promise<void> =
 
       // 感情分析の抽出
       const sentiment = extractSentiment(transcriptionData.segments);
-      
+
       // キーポイントとアクションアイテムの抽出
       const { keyPoints, actionItems } = extractKeyPointsAndActions(summary);
 
@@ -176,14 +180,23 @@ export const handler = async (event: S3Event, context: Context): Promise<void> =
 
     } catch (error) {
       console.error('Error processing transcription:', error);
-      
+
       // エラー詳細をログに記録
       if (error instanceof Error) {
         console.error('Error name:', error.name);
         console.error('Error message:', error.message);
         console.error('Error stack:', error.stack);
+
+        if (error.name === 'ValidationException') {
+          console.error('Model ID may be incorrect:', process.env.BEDROCK_MODEL_ID);
+          console.error('Expected format: anthropic.claude-3-sonnet-20240229-v1:0');
+        }
+        
+        if (error.name === 'AccessDeniedException') {
+          console.error('IAM permissions may be missing for Bedrock model access');
+        }
       }
-      
+
       // CloudWatchメトリクスにエラーを記録
       throw error;
     }
@@ -201,7 +214,6 @@ function extractSentiment(segments: TranscriptionSegment[]): { overall: "POSITIV
 
   const positiveCount = sentiments.filter(s => s === "POSITIVE").length;
   const negativeCount = sentiments.filter(s => s === "NEGATIVE").length;
-  const neutralCount = sentiments.filter(s => s === "NEUTRAL").length;
 
   const total = sentiments.length;
   const positiveRatio = positiveCount / total;

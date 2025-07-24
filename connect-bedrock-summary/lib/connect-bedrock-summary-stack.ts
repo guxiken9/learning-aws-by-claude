@@ -56,7 +56,8 @@ export class ConnectBedrockSummaryStack extends cdk.Stack {
         'bedrock:InvokeModel',
       ],
       resources: [
-        `arn:aws:bedrock:${this.region}::foundation-model/anthropic.claude-3-sonnet-20240229-v1:0`,
+        `arn:aws:bedrock:${this.region}::foundation-model/*`,
+        `arn:aws:bedrock:${this.region}:*:inference-profile/*`
       ],
     }));
 
